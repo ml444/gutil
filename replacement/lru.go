@@ -1,40 +1,71 @@
 package replacement
 
-import "container/list"
+import (
+	"container/list"
+	"sync"
+)
 
 type LRU struct {
 	size      int
 	innerList *list.List
-	innerMap  map[int]*list.Element
+	innerMap  sync.Map // map[int]*list.Element
 }
 
 type entry struct {
-	key   int
-	value int
+	key   interface{}
+	value interface{}
 }
 
-func (lru *LRU) Get(key int) (int, bool) {
-	if e, ok := lru.innerMap[key]; ok {
+func NewLRU(size int) *LRU {
+	return &LRU{
+		size:      size,
+		innerList: list.New(),
+		innerMap:  sync.Map{},
+	}
+}
+
+func (lru *LRU) loadElement(key interface{}) (*list.Element, bool) {
+	v, ok := lru.innerMap.Load(key)
+	if !ok {
+		return nil, false
+	}
+	el, ok := v.(*list.Element)
+	if !ok {
+		return nil, false
+	}
+	return el, true
+}
+
+func (lru *LRU) storeElement(key, value interface{}) {
+	lru.innerMap.Store(key, value)
+}
+
+func (lru *LRU) deleteElement(key interface{}) {
+	lru.innerMap.Delete(key)
+}
+
+func (lru *LRU) Get(key interface{}) (interface{}, bool) {
+	if e, ok := lru.loadElement(key); ok {
 		lru.innerList.MoveToFront(e)
 		return e.Value.(*entry).value, true
 	}
-	return -1, false
+	return nil, false
 }
 
-func (lru *LRU) Put(key int, value int) (evicted bool) {
-	if e, ok := lru.innerMap[key]; ok {
+func (lru *LRU) Put(key interface{}, value interface{}) (evicted bool) {
+	if e, ok := lru.loadElement(key); ok {
 		lru.innerList.MoveToFront(e)
 		e.Value.(*entry).value = value
 		return false
 	} else {
 		e := &entry{key, value}
 		el := lru.innerList.PushFront(e)
-		lru.innerMap[key] = el
+		lru.storeElement(key, el)
 
 		if lru.innerList.Len() > lru.size {
 			last := lru.innerList.Back()
 			lru.innerList.Remove(last)
-			delete(lru.innerMap, last.Value.(*entry).key)
+			lru.deleteElement(last.Value.(*entry).key)
 			return true
 		}
 		return false
