@@ -6,11 +6,10 @@ import (
 	"crypto/sha512"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"io"
-
-	"github.com/gobuffalo/packr/v2/file/resolver/encoding/hex"
 )
 
 type TTT struct {
