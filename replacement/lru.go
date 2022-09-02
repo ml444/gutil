@@ -1,11 +1,18 @@
+//go:build go1.9
+// +build go1.9
+
 package replacement
 
-import "container/list"
+import (
+	"container/list"
+	"sync"
+)
 
 type LRU struct {
 	size      int
 	innerList *list.List
-	innerMap  map[int]*list.Element
+	// innerMap  map[int]*list.Element
+	innerMap sync.Map
 }
 
 type entry struct {
@@ -14,29 +21,38 @@ type entry struct {
 }
 
 func (lru *LRU) Get(key int) (int, bool) {
-	if e, ok := lru.innerMap[key]; ok {
-		lru.innerList.MoveToFront(e)
-		return e.Value.(*entry).value, true
+	if e, ok := lru.innerMap.Load(key); ok {
+		el, ok := e.(*list.Element)
+		if !ok {
+			return -1, false
+		}
+		lru.innerList.MoveToFront(el)
+		return el.Value.(*entry).value, true
 	}
 	return -1, false
 }
 
 func (lru *LRU) Put(key int, value int) (evicted bool) {
-	if e, ok := lru.innerMap[key]; ok {
-		lru.innerList.MoveToFront(e)
-		e.Value.(*entry).value = value
+	if e, ok := lru.innerMap.Load(key); ok {
+		el := e.(*list.Element)
+		lru.innerList.MoveToFront(el)
+		el.Value.(*entry).value = value
 		return false
 	} else {
 		e := &entry{key, value}
 		el := lru.innerList.PushFront(e)
-		lru.innerMap[key] = el
+		lru.innerMap.Store(key, el)
 
 		if lru.innerList.Len() > lru.size {
 			last := lru.innerList.Back()
 			lru.innerList.Remove(last)
-			delete(lru.innerMap, last.Value.(*entry).key)
+			lru.innerMap.Delete(last.Value.(*entry).key)
 			return true
 		}
 		return false
 	}
 }
+
+
+
+
