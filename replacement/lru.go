@@ -1,3 +1,6 @@
+//go:build go1.9
+// +build go1.9
+
 package replacement
 
 import (
@@ -8,7 +11,7 @@ import (
 type LRU struct {
 	size      int
 	innerList *list.List
-	innerMap  sync.Map // map[int]*list.Element
+	innerMap  sync.Map
 }
 
 type entry struct {
