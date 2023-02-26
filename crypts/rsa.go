@@ -1,7 +1,7 @@
 package crypts
 
 import (
-	"crypt/rand"
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha512"
 	"crypto/x509"
@@ -11,28 +11,6 @@ import (
 	"errors"
 	"io"
 )
-
-type TTT struct {
-	aaa string
-	bbb []int
-}
-
-type BBB struct {
-	T *TTT
-	t TTT
-	b bool
-}
-
-func (bs *BBB) Get() {}
-func (bs BBB) Set()  {}
-
-var bs *BBB
-
-func t() {
-
-	bs = &BBB{}
-	bs.Get()
-}
 
 func GenRSAKey(out io.Writer, bits int) error {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
