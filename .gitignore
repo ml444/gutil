@@ -16,5 +16,6 @@
 #
 .idea/
 main.go
+.DS_Store
 
 *_test.go
