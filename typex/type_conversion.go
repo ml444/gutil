@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func Interface2Byte(value interface{}) ([]byte, error) {
+func AnyToByte(value interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 	err := enc.Encode(value)
@@ -16,7 +16,7 @@ func Interface2Byte(value interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func Interface2Int(i interface{}) int {
+func AnyToInt(i interface{}) int {
 	switch x := i.(type) {
 	case bool:
 		if x {

@@ -3,10 +3,11 @@ package pluck
 import (
 	"errors"
 	"fmt"
-	"github.com/ml444/gutil/typex"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/ml444/gutil/typex"
 )
 
 func ToUint64s(list interface{}, fieldName string) []uint64 {
@@ -190,7 +191,7 @@ func SubSlice(obj interface{}, startIdx, endIdx interface{}) (subSlice interface
 	}
 	list := reflect.MakeSlice(reflect.SliceOf(vo.Type().Elem()), 0, 0)
 	subSlice = list.Interface()
-	start, end := typex.Interface2Int(startIdx), typex.Interface2Int(endIdx)
+	start, end := typex.AnyToInt(startIdx), typex.AnyToInt(endIdx)
 	if start < 0 || end < 0 || start >= end {
 		return
 	}
@@ -250,6 +251,9 @@ func KeyBy0(list interface{}, fieldName string) (res interface{}) {
 // 性能方便相较 KeyBy 版本有大幅度提升，list的长度越长，性能提升越明显，根据性能测试，CPU/内存消耗相对较少且内存分配次数也大幅度减少
 func KeyBy(list interface{}, fieldName string) interface{} {
 	lv := reflect.ValueOf(list)
+	// if lv.IsNil() {
+	// 	return reflect.New(lv.Type()).Elem().Interface()
+	// }
 
 	switch lv.Kind() {
 	case reflect.Slice, reflect.Array:
@@ -319,7 +323,7 @@ func JoinIntegerSliceToString(list interface{}, sep string) (string, error) {
 		reflect.Uint64:
 		var intList []int
 		for i := 0; i < listValueReflect.Len(); i++ {
-			intList = append(intList, typex.Interface2Int(listValueReflect.Index(i).Interface()))
+			intList = append(intList, typex.AnyToInt(listValueReflect.Index(i).Interface()))
 		}
 
 		var intSlice2String string
