@@ -1,6 +1,3 @@
-//go:build !go1.20
-// +build !go1.20
-
 /*
 copy from github.com/valyala/fasthttp
 */
