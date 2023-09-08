@@ -1,7 +1,7 @@
 //go:build go1.9
 // +build go1.9
 
-package replacement
+package containerx
 
 import (
 	"container/list"
