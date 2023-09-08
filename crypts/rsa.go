@@ -46,9 +46,13 @@ type RsaCrypt struct {
 	privateKey *rsa.PrivateKey
 }
 
-// BytesToPublicKey bytes to public key
-func (r *RsaCrypt) BytesToPublicKey(pub []byte) error {
-	block, _ := pem.Decode(pub)
+func NewRSA() *RsaCrypt {
+	return &RsaCrypt{}
+}
+
+// SetPublicKey bytes to public key
+func (r *RsaCrypt) SetPublicKey(public []byte) error {
+	block, _ := pem.Decode(public)
 	if block == nil {
 		return errors.New("private key error")
 	}
@@ -64,9 +68,9 @@ func (r *RsaCrypt) BytesToPublicKey(pub []byte) error {
 	return nil
 }
 
-// BytesToPrivateKey bytes to private key
-func (r *RsaCrypt) BytesToPrivateKey(priv []byte) error {
-	block, _ := pem.Decode(priv)
+// SetPrivateKey bytes to private key
+func (r *RsaCrypt) SetPrivateKey(private []byte) error {
+	block, _ := pem.Decode(private)
 	if block == nil {
 		return errors.New("private key error")
 	}
@@ -78,11 +82,15 @@ func (r *RsaCrypt) BytesToPrivateKey(priv []byte) error {
 	r.publicKey = &key.PublicKey
 	return nil
 }
-func (r *RsaCrypt) StringToPublicKey(pubStr string) error {
-	return r.BytesToPublicKey([]byte(pubStr))
+
+// SetPublicKeyByBase64Str Get bytes data by decoding base64 string
+func (r *RsaCrypt) SetPublicKeyByBase64Str(publicStr string) error {
+	return r.SetPublicKey([]byte(publicStr))
 }
-func (r *RsaCrypt) StringToPrivateKey(privStr string) error {
-	return r.BytesToPrivateKey([]byte(privStr))
+
+// SetPrivateKeyByBase64Str Get bytes data by decoding base64 string
+func (r *RsaCrypt) SetPrivateKeyByBase64Str(privateStr string) error {
+	return r.SetPrivateKey([]byte(privateStr))
 }
 
 // Encrypt encrypts data with public key
