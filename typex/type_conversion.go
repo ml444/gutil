@@ -3,7 +3,9 @@ package typex
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"strconv"
+	"strings"
 )
 
 func AnyToByte(value interface{}) ([]byte, error) {
