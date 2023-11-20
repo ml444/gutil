@@ -255,7 +255,7 @@ func KeyBy(list interface{}, fieldName string) interface{} {
 	// 	return reflect.New(lv.Type()).Elem().Interface()
 	// }
 
-	switch lv.Kind() {
+	switch lv.Type().Kind() {
 	case reflect.Slice, reflect.Array:
 	default:
 		panic("list required slice or array type")
@@ -334,4 +334,52 @@ func JoinIntegerSliceToString(list interface{}, sep string) (string, error) {
 	default:
 		return "", errors.New(fmt.Sprintf("Argument 1 expect integer type, given %t", list))
 	}
+}
+
+func StructToSlice(data interface{}, omitempty bool) (columns []interface{}) {
+	dataV := reflect.ValueOf(data)
+	if dataV.Type().Kind() == reflect.Ptr {
+		dataV = dataV.Elem()
+	}
+
+	for i := 0; i < dataV.NumField(); i++ {
+		v := dataV.Field(i)
+
+		// Check if the field is zero or empty
+		isEmpty := reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
+		if isEmpty && omitempty {
+			continue
+		}
+		if isEmpty {
+			columns = append(columns, reflect.Zero(v.Type()).Interface())
+		} else {
+			columns = append(columns, v.Interface())
+		}
+	}
+
+	return columns
+}
+
+func StructToStrSlice(data interface{}, omitempty bool) (columns []string) {
+	dataV := reflect.ValueOf(data)
+	if dataV.Type().Kind() == reflect.Ptr {
+		dataV = dataV.Elem()
+	}
+
+	for i := 0; i < dataV.NumField(); i++ {
+		v := dataV.Field(i)
+
+		// Check if the field is zero or empty
+		isEmpty := reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
+		if isEmpty && omitempty {
+			continue
+		}
+		if isEmpty {
+			columns = append(columns, typex.AnyToStr(reflect.Zero(v.Type()).Interface()))
+		} else {
+			columns = append(columns, typex.AnyToStr(v.Interface()))
+		}
+	}
+
+	return columns
 }
