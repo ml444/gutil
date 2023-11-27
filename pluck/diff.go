@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func DiffStruct(source, target interface{}, excludeFields []string) map[string]interface{} {
+func DiffStruct(source, target interface{}, excludeFields ...string) map[string]interface{} {
 	var data = make(map[string]interface{})
 	srcV := reflect.ValueOf(source)
 	if srcV.Kind() == reflect.Ptr {
