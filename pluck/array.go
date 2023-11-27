@@ -10,7 +10,7 @@ import (
 	"github.com/ml444/gutil/typex"
 )
 
-func ToUint64s(list interface{}, fieldName string) []uint64 {
+func ToUint64s(list interface{}, fieldName string, unique bool) []uint64 {
 	var result []uint64
 	vo := reflect.ValueOf(list)
 	switch vo.Kind() {
@@ -44,6 +44,17 @@ func ToUint64s(list interface{}, fieldName string) []uint64 {
 		}
 	default:
 		panic("required list of struct type")
+	}
+	if unique {
+		var m = make(map[uint64]struct{})
+		for _, v := range result {
+			m[v] = struct{}{}
+		}
+		var newList []uint64
+		for k := range m {
+			newList = append(newList, k)
+		}
+		result = newList
 	}
 	return result
 }
@@ -87,7 +98,7 @@ func ToInt64s(list interface{}, fieldName string) []int64 {
 }
 
 func ToUint64Map(list interface{}, fieldName string) map[uint64]bool {
-	out := ToUint64s(list, fieldName)
+	out := ToUint64s(list, fieldName, false)
 	res := map[uint64]bool{}
 	for _, v := range out {
 		res[v] = true
