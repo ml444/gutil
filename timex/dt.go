@@ -2,8 +2,6 @@ package timex
 
 import "time"
 
-const defaultTimeLayout = time.DateTime // "2006-01-02 15:04:05"
-
 type DT struct {
 	t              time.Time
 	loc            *time.Location
@@ -15,7 +13,7 @@ func New() *DT {
 	return &DT{
 		t:              time.Now(),
 		loc:            time.Local,
-		layout:         defaultTimeLayout,
+		layout:         time.DateTime,
 		startAtWeekday: time.Sunday,
 	}
 }
@@ -103,16 +101,8 @@ func (d *DT) WeekRanges() [][2]int64 {
 	return weekRanges
 }
 
-func (d *DT) Format(ts ...int64) string {
-	if len(ts) == 0 {
-		return ""
-	}
-	sec := ts[0]
-	nsec := int64(0)
-	if len(ts) > 1 {
-		nsec = ts[1]
-	}
-	return time.Unix(sec, nsec).Format(d.layout)
+func (d *DT) Format() string {
+	return d.t.Format(d.layout)
 }
 
 func (d *DT) ParseTime(st string) error {
