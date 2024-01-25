@@ -55,13 +55,13 @@ func (lru *LRU) Get(key interface{}) (interface{}, bool) {
 }
 
 func (lru *LRU) Put(key interface{}, value interface{}) (evicted bool) {
-	if e, ok := lru.loadElement(key); ok {
-		lru.innerList.MoveToFront(e)
-		e.Value.(*entry).value = value
+	if el, ok := lru.loadElement(key); ok {
+		lru.innerList.MoveToFront(el)
+		el.Value.(*entry).value = value
 		return false
 	} else {
 		e := &entry{key, value}
-		el := lru.innerList.PushFront(e)
+		el = lru.innerList.PushFront(e)
 		lru.storeElement(key, el)
 
 		if lru.innerList.Len() > lru.size {
