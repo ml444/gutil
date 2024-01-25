@@ -23,7 +23,6 @@ func CamelToSnake(s string) string {
 		}
 		data = append(data, d)
 	}
-	// ToLower把大写字母统一转小写
 	return strings.ToLower(string(data[:]))
 }
 
@@ -35,10 +34,10 @@ func SnakeToCamel(s string) string {
 	num := len(s) - 1
 	for i := 0; i <= num; i++ {
 		d := s[i]
-		if k == false && d >= 'A' && d <= 'Z' {
+		if !k && d >= 'A' && d <= 'Z' {
 			k = true
 		}
-		if d >= 'a' && d <= 'z' && (j || k == false) {
+		if d >= 'a' && d <= 'z' && (j || !k) {
 			d = d - 32
 			j = false
 			k = true
@@ -52,14 +51,6 @@ func SnakeToCamel(s string) string {
 	return string(data[:])
 }
 
-func CutStr(s string, max int) string {
-	sr := []rune(s)
-	if len(sr) > max {
-		sr = sr[:max]
-	}
-	return string(sr)
-}
-
 // MixStrEncode confuse string to encrypt them
 func MixStrEncode(s string) string {
 	var isDouble bool
@@ -68,12 +59,14 @@ func MixStrEncode(s string) string {
 	rang := bLen / 2
 	if bLen%2 == 0 {
 		isDouble = true
+	} else {
+		rang += 1
 	}
 	var buffer bytes.Buffer
 	for i := 0; i < rang; i++ {
 		j := bLen - 1 - i
 		buffer.Write(b[i : i+1])
-		if isDouble || j != rang {
+		if isDouble || j+1 != rang {
 			buffer.Write(b[j : j+1])
 		}
 	}

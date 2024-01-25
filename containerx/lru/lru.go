@@ -1,7 +1,6 @@
 //go:build go1.9
-// +build go1.9
 
-package containerx
+package lru
 
 import (
 	"container/list"
