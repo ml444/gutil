@@ -6,7 +6,7 @@ import (
 )
 
 func DiffStruct(source, target interface{}, excludeFields ...string) map[string]interface{} {
-	var data = make(map[string]interface{})
+	data := make(map[string]interface{})
 	srcV := reflect.ValueOf(source)
 	if srcV.Kind() == reflect.Ptr {
 		srcV = srcV.Elem()
@@ -52,4 +52,41 @@ func Contains(source []string, name string) bool {
 		}
 	}
 	return false
+}
+
+type DigitAndString interface {
+	int | uint | int8 | uint8 | int16 | uint16 | int32 | uint32 | int64 | uint64 | string
+}
+
+// DiffArray returns the elements in target that are not in source.
+func DiffArray[T DigitAndString](source, target []T) []T {
+	var data []T
+	m := make(map[T]struct{})
+	for _, v := range source {
+		m[v] = struct{}{}
+	}
+	for _, v := range target {
+		if _, ok := m[v]; !ok {
+			data = append(data, v)
+		}
+	}
+	return data
+}
+
+// CompareList 比较两个切片或数组的元素是否一致，不考虑元素的顺序
+func CompareList[T DigitAndString](source, target []T) bool {
+	if len(source) != len(target) {
+		return false
+	}
+	m := make(map[T]int)
+	for _, v := range source {
+		m[v]++
+	}
+	for _, v := range target {
+		if m[v] == 0 {
+			return false
+		}
+		m[v]--
+	}
+	return true
 }
