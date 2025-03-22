@@ -6,6 +6,7 @@ import (
 )
 
 type testUser struct {
+	Id   uint64
 	Name string
 	Age  uint
 }
@@ -25,7 +26,7 @@ func TestToNumbers(t *testing.T) {
 		{
 			name: "",
 			args: args{
-				list:      []*testUser{{"foo", 12}, {"bar", 18}, {"abc", 18}},
+				list:      []*testUser{{1, "foo", 12}, {2, "bar", 18}, {3, "abc", 18}},
 				fieldName: "Age",
 				unique:    false,
 			},
@@ -34,7 +35,7 @@ func TestToNumbers(t *testing.T) {
 		{
 			name: "",
 			args: args{
-				list:      []*testUser{{"foo", 12}, {"bar", 18}, {"abc", 18}},
+				list:      []*testUser{{1, "foo", 12}, {2, "bar", 18}, {3, "abc", 18}},
 				fieldName: "Age",
 				unique:    true,
 			},

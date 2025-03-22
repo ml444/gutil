@@ -9,7 +9,7 @@ import (
 // 把结构体的字段构成map输出，如果存在json标签，则key使用json标签名，否则用字段自身的命名，value为字段值，如果字段值为nil，则不输出。
 // removeZero：是否移除零值
 // deep：是否深度转换，字段为结构体时，可以继续转换为map
-func StructToMapByJsonTag(s any, removeZero bool, deep bool) map[string]any {
+func StructToMap(s any, removeZero bool, deep bool) map[string]any {
 	m := make(map[string]any)
 	v := reflect.ValueOf(s)
 	if v.Kind() == reflect.Ptr {
@@ -41,7 +41,7 @@ func StructToMapByJsonTag(s any, removeZero bool, deep bool) map[string]any {
 			key = v.Type().Field(i).Name
 		}
 		if deep && field.Kind() == reflect.Struct {
-			m[key] = StructToMapByJsonTag(field.Interface(), removeZero, deep)
+			m[key] = StructToMap(field.Interface(), removeZero, deep)
 		} else {
 			if field.Kind() == reflect.Ptr {
 				field = field.Elem()
@@ -52,7 +52,7 @@ func StructToMapByJsonTag(s any, removeZero bool, deep bool) map[string]any {
 	return m
 }
 
-func ToNumberMap[T TNumber](list any, fieldName string) map[T]bool {
+func ToNumberFieldMap[T TNumber](list any, fieldName string) map[T]bool {
 	out := ToNumbers[T](list, fieldName, false)
 	res := map[T]bool{}
 	for _, v := range out {
@@ -61,7 +61,7 @@ func ToNumberMap[T TNumber](list any, fieldName string) map[T]bool {
 	return res
 }
 
-func ToStringMap(list any, fieldName string) map[string]bool {
+func ToStringFieldMap(list any, fieldName string) map[string]bool {
 	out := ToStrings(list, fieldName)
 	res := map[string]bool{}
 	for _, v := range out {
