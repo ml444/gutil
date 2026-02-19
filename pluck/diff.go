@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// DiffStruct returns fields in the target structure whose values ​​differ from those in the source data structure.
 func DiffStruct(source, target interface{}, excludeFields ...string) map[string]interface{} {
 	data := make(map[string]interface{})
 	srcV := reflect.ValueOf(source)
@@ -20,6 +21,9 @@ func DiffStruct(source, target interface{}, excludeFields ...string) map[string]
 		v := tgtV.Field(i)
 		t := tgtT.Field(i)
 		if !t.IsExported() {
+			continue
+		}
+		if v.Kind() == reflect.Ptr && v.IsNil() {
 			continue
 		}
 		name := t.Name
@@ -39,7 +43,7 @@ func DiffStruct(source, target interface{}, excludeFields ...string) map[string]
 			continue
 		}
 		if !reflect.DeepEqual(v.Interface(), vv.Interface()) {
-			data[jsonTag] = vv.Interface()
+			data[jsonTag] = v.Interface()
 		}
 	}
 	return data
